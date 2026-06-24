@@ -2,7 +2,7 @@
 
 import * as THREE from 'three'
 import { Html } from '@react-three/drei'
-import { useRef, useState, useMemo } from 'react'
+import { useRef, useState, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 
 function Banner({ position, index }: { position: [number, number, number], index: number }) {
@@ -111,70 +111,100 @@ function Gate() {
 
 function Worker({ position, rotation }: { position: [number, number, number], rotation: [number, number, number] }) {
   const [show, setShow] = useState(false)
+  const workerRef = useRef<THREE.Group>(null)
+
+  useFrame(({ camera }) => {
+    if (workerRef.current) {
+      const workerPos = new THREE.Vector3()
+      workerRef.current.getWorldPosition(workerPos)
+      const dist = camera.position.distanceTo(workerPos)
+      if (dist < 45 && !show) setShow(true)
+      if (dist >= 45 && show) setShow(false)
+    }
+  })
+
+  useEffect(() => {
+    if (show) {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') {
+          window.location.href = 'https://youtube.com'
+        }
+      }
+      window.addEventListener('keydown', handleKeyDown)
+      return () => window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [show])
 
   return (
-    <group position={position} rotation={rotation} 
-      onClick={(e) => { e.stopPropagation(); setShow(!show); }}
-      onPointerEnter={() => document.body.style.cursor = 'pointer'}
-      onPointerLeave={() => document.body.style.cursor = 'auto'}
-    >
-      {/* Legs (Blue Jeans) */}
-      <mesh position={[0, 1, 0]}>
-        <boxGeometry args={[1.2, 2, 0.8]} />
+    <group position={position} rotation={rotation} ref={workerRef}>
+      {/* Left Leg */}
+      <mesh position={[-0.35, 1.05, 0]}>
+        <capsuleGeometry args={[0.25, 1.5, 16, 16]} />
         <meshStandardMaterial color="#224488" />
       </mesh>
-      {/* Torso (High Vis Orange) */}
-      <mesh position={[0, 3.5, 0]}>
-        <boxGeometry args={[1.5, 3, 1]} />
+      {/* Right Leg */}
+      <mesh position={[0.35, 1.05, 0]}>
+        <capsuleGeometry args={[0.25, 1.5, 16, 16]} />
+        <meshStandardMaterial color="#224488" />
+      </mesh>
+      {/* Torso */}
+      <mesh position={[0, 3.1, 0]}>
+        <capsuleGeometry args={[0.5, 1.5, 16, 32]} />
+        <meshStandardMaterial color="#ff5500" />
+      </mesh>
+      {/* Left Arm */}
+      <mesh position={[-0.8, 3.2, 0]} rotation={[0, 0, 0.2]}>
+        <capsuleGeometry args={[0.2, 1.5, 16, 16]} />
+        <meshStandardMaterial color="#ff5500" />
+      </mesh>
+      {/* Right Arm */}
+      <mesh position={[0.8, 3.2, 0]} rotation={[0, 0, -0.2]}>
+        <capsuleGeometry args={[0.2, 1.5, 16, 16]} />
         <meshStandardMaterial color="#ff5500" />
       </mesh>
       {/* Head */}
-      <mesh position={[0, 5.5, 0]}>
-        <boxGeometry args={[1, 1, 1]} />
+      <mesh position={[0, 4.8, 0]}>
+        <sphereGeometry args={[0.45, 32, 32]} />
         <meshStandardMaterial color="#ffccaa" />
       </mesh>
       {/* Cap */}
-      <mesh position={[0, 6.1, 0.2]}>
-        <boxGeometry args={[1.1, 0.2, 1.2]} />
+      <mesh position={[0, 5.25, 0.05]} rotation={[-0.1, 0, 0]}>
+        <cylinderGeometry args={[0.46, 0.46, 0.2, 32]} />
+        <meshStandardMaterial color="#111" />
+      </mesh>
+      {/* Cap Visor */}
+      <mesh position={[0, 5.15, 0.4]} rotation={[-0.2, 0, 0]}>
+        <boxGeometry args={[0.5, 0.05, 0.5]} />
         <meshStandardMaterial color="#111" />
       </mesh>
 
-      {/* Interactive HTML Button Overlay */}
+      {/* Interactive HTML Cloud Overlay */}
       {show && (
-        <Html position={[0, 7.5, 0]} center zIndexRange={[100, 0]}>
-          <div style={{
-            background: 'rgba(0,0,0,0.85)',
-            border: '2px solid #00ffcc',
-            padding: '16px',
-            borderRadius: '8px',
-            textAlign: 'center',
-            minWidth: '200px',
-            boxShadow: '0 0 15px rgba(0, 255, 204, 0.5)'
-          }}>
-            <h3 style={{ color: 'white', margin: '0 0 10px 0', fontFamily: 'sans-serif' }}>Mechanic</h3>
-            <button style={{
-              background: '#00ffcc',
-              border: 'none',
-              color: 'black',
-              padding: '10px 20px',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              fontFamily: 'sans-serif',
-              cursor: 'pointer',
-              borderRadius: '4px',
-              textTransform: 'uppercase',
-              pointerEvents: 'auto',
-              width: '100%',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            onClick={() => {
-              window.alert("Showing Resume! (You can link a PDF or another page here)");
-            }}
-            >
-              Show Resume
-            </button>
+        <Html position={[0, 8.5, 0]} center zIndexRange={[100, 0]}>
+          <div style={{ filter: 'drop-shadow(0px 4px 6px rgba(0,0,0,0.3))', position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            {/* Cloud bumps */}
+            <div style={{ position: 'absolute', background: 'white', borderRadius: '50%', width: '40px', height: '40px', top: '10px', left: '5px' }} />
+            <div style={{ position: 'absolute', background: 'white', borderRadius: '50%', width: '60px', height: '60px', top: '-10px', left: '35px' }} />
+            <div style={{ position: 'absolute', background: 'white', borderRadius: '50%', width: '50px', height: '50px', top: '0px', right: '15px' }} />
+            {/* Base pill */}
+            <div style={{ position: 'absolute', background: 'white', borderRadius: '30px', width: '150px', height: '50px', top: '20px', left: '0' }} />
+            
+            {/* Thought bubble trail (instead of speech tail) */}
+            <div style={{ position: 'absolute', background: 'white', borderRadius: '50%', width: '15px', height: '15px', bottom: '-20px', left: '45px' }} />
+            <div style={{ position: 'absolute', background: 'white', borderRadius: '50%', width: '8px', height: '8px', bottom: '-32px', left: '40px' }} />
+
+            {/* Content */}
+            <div style={{ position: 'relative', zIndex: 1, padding: '25px 15px 15px 15px', textAlign: 'center', color: 'black', width: '150px' }}>
+              <p style={{ margin: '0 0 4px 0', fontFamily: 'sans-serif', fontWeight: 'bold', fontSize: '11px' }}>
+                Sir / Maam pls hire me
+              </p>
+              <a href="https://youtube.com" target="_blank" rel="noreferrer" style={{ color: '#0066cc', textDecoration: 'none', fontSize: '11px', fontWeight: 'bold' }}>
+                youtube.com
+              </a>
+              <p style={{ fontSize: '9px', color: '#888', marginTop: '4px', marginBottom: 0 }}>
+                (Press Enter)
+              </p>
+            </div>
           </div>
         </Html>
       )}
@@ -184,10 +214,10 @@ function Worker({ position, rotation }: { position: [number, number, number], ro
 
 function GasStation() {
   return (
-    <group position={[300, -0.45, -20]}>
+    <group position={[150, -0.45, -20]}>
       {/* Asphalt Base */}
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[10, 25, 32]} />
+        <circleGeometry args={[25, 32]} />
         <meshStandardMaterial color="#1a1a1a" roughness={0.9} />
       </mesh>
       
@@ -262,12 +292,12 @@ function GasStation() {
 }
 
 export default function NightRoad() {
-  const mapLength = 400;
+  const mapLength = 250;
   
   return (
     <group>
-      {/* The Dark Asphalt Road, Shifted +100m forward to optimize space */}
-      <group position={[100, -0.45, -20]}>
+      {/* The Dark Asphalt Road, Shifted forward to optimize space */}
+      <group position={[25, -0.45, -20]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[mapLength, 15]} />
           <meshStandardMaterial color="#1a1a1a" roughness={0.9} />
@@ -283,13 +313,13 @@ export default function NightRoad() {
       </group>
 
       {/* Rocky Soil Left (under Banners) */}
-      <mesh position={[100, -0.48, -10]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh position={[25, -0.48, -10]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[mapLength, 10]} />
         <meshStandardMaterial color="#2d2015" roughness={1} bumpScale={0.2} />
       </mesh>
 
       {/* Rocky Soil Right (under Lanterns) */}
-      <mesh position={[100, -0.48, -30]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh position={[25, -0.48, -30]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[mapLength, 10]} />
         <meshStandardMaterial color="#2d2015" roughness={1} bumpScale={0.2} />
       </mesh>
@@ -297,17 +327,17 @@ export default function NightRoad() {
       {/* The Dynamic Gate at the start of the road */}
       <Gate />
 
-      {/* 5 Big Overhead Banners spanning across the road */}
+      {/* 3 Big Overhead Banners spanning across the road */}
       <group position={[0, 0, -20]}>
-        {Array.from({ length: 5 }).map((_, i) => {
+        {Array.from({ length: 3 }).map((_, i) => {
           const xPos = -40 + i * 60;
           return <Banner key={`banner-${i}`} position={[xPos, 0, 0]} index={i} />
         })}
       </group>
 
-      {/* 5 Glowing Lanterns pushed further left, away from the banners */}
+      {/* 3 Glowing Lanterns pushed further left, away from the banners */}
       <group position={[0, 0, -32]}>
-        {Array.from({ length: 5 }).map((_, i) => {
+        {Array.from({ length: 3 }).map((_, i) => {
           const xPos = -40 + i * 60; 
           return (
             <group key={`lantern-${i}`} position={[xPos, 0, 0]}>

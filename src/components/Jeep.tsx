@@ -170,7 +170,7 @@ export default function Jeep() {
         {/* Engine Block / Hood */}
         <mesh castShadow receiveShadow position={[0.9, 0.9, 0]}>
           <boxGeometry args={[1.6, 0.4, 1.4]} />
-          <meshStandardMaterial color="#c0392b" roughness={0.5} metalness={0.7} />
+          <meshStandardMaterial color="#c0392b" roughness={0.8} metalness={0.3} />
         </mesh>
         
         {/* Cabin (Sloped using 4-sided cylinder) */}
@@ -181,7 +181,7 @@ export default function Jeep() {
         {/* Cabin Roof */}
         <mesh castShadow receiveShadow position={[-0.2, 1.75, 0]}>
           <boxGeometry args={[1.0, 0.1, 1.0]} />
-          <meshStandardMaterial color="#c0392b" roughness={0.5} metalness={0.7} />
+          <meshStandardMaterial color="#c0392b" roughness={0.8} metalness={0.3} />
         </mesh>
 
         {/* Truck Bed Base */}
@@ -193,15 +193,15 @@ export default function Jeep() {
         {/* Bed Walls */}
         <mesh castShadow receiveShadow position={[-1.3, 1.0, 0.65]}>
           <boxGeometry args={[1.2, 0.4, 0.1]} />
-          <meshStandardMaterial color="#c0392b" roughness={0.5} metalness={0.7} />
+          <meshStandardMaterial color="#c0392b" roughness={0.8} metalness={0.3} />
         </mesh>
         <mesh castShadow receiveShadow position={[-1.3, 1.0, -0.65]}>
           <boxGeometry args={[1.2, 0.4, 0.1]} />
-          <meshStandardMaterial color="#c0392b" roughness={0.5} metalness={0.7} />
+          <meshStandardMaterial color="#c0392b" roughness={0.8} metalness={0.3} />
         </mesh>
         <mesh castShadow receiveShadow position={[-1.85, 1.0, 0]}>
           <boxGeometry args={[0.1, 0.4, 1.4]} />
-          <meshStandardMaterial color="#c0392b" roughness={0.5} metalness={0.7} />
+          <meshStandardMaterial color="#c0392b" roughness={0.8} metalness={0.3} />
         </mesh>
 
         {/* Spare Tire in Bed */}
