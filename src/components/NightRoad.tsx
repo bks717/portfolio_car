@@ -137,11 +137,12 @@ function Worker({ position, rotation }: { position: [number, number, number], ro
 
   return (
     <group position={position} rotation={rotation} ref={workerRef}>
-      {/* Left Leg */}
-      <mesh position={[-0.35, 1.05, 0]}>
-        <capsuleGeometry args={[0.25, 1.5, 16, 16]} />
-        <meshStandardMaterial color="#224488" />
-      </mesh>
+      <group scale={0.65}>
+        {/* Left Leg */}
+        <mesh position={[-0.35, 1.05, 0]}>
+          <capsuleGeometry args={[0.25, 1.5, 16, 16]} />
+          <meshStandardMaterial color="#224488" />
+        </mesh>
       {/* Right Leg */}
       <mesh position={[0.35, 1.05, 0]}>
         <capsuleGeometry args={[0.25, 1.5, 16, 16]} />
@@ -208,6 +209,7 @@ function Worker({ position, rotation }: { position: [number, number, number], ro
           </div>
         </Html>
       )}
+      </group>
     </group>
   )
 }
@@ -220,6 +222,23 @@ function GasStation() {
         <circleGeometry args={[25, 32]} />
         <meshStandardMaterial color="#1a1a1a" roughness={0.9} />
       </mesh>
+      
+      {/* Aesthetic Circumference Lights */}
+      {Array.from({ length: 32 }).map((_, i) => {
+        const angle = (i / 32) * Math.PI * 2;
+        const radius = 24.5;
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        return (
+          <group key={`edge-light-${i}`} position={[x, 0.05, z]}>
+            <mesh rotation={[-Math.PI / 2, 0, 0]}>
+              <ringGeometry args={[0.3, 0.6, 16]} />
+              <meshStandardMaterial color="#00ffcc" emissive="#00ffcc" emissiveIntensity={2} />
+            </mesh>
+            <pointLight distance={4} intensity={8} color="#00ffcc" />
+          </group>
+        )
+      })}
       
       {/* Station Concrete Island */}
       <mesh position={[0, 0.2, 0]}>
